@@ -27,7 +27,7 @@ public abstract class Animal implements Competitor {
     @Override
     public void run(int dist) {
         if (dist <= maxRunDistance) {
-            System.out.println(type + " " + name + " справился с кроссом");
+            System.out.println(type + " " + name + " отлично справился с кроссом");
         } else {
             System.out.println(type + " " + name + " не смог справиться с кроссом и сошел с дистанции");
             onDistance = false;
@@ -37,7 +37,7 @@ public abstract class Animal implements Competitor {
     @Override
     public void jump(int height) {
         if (height <= maxJumpHeight) {
-            System.out.println(type + " " + name + " перепрыгнул через стену");
+            System.out.println(type + " " + name + " отлично перепрыгнул через стену");
         } else {
             System.out.println(type + " " + name + " не смог перепрыгнуть через стену и сошел с дистанции");
             onDistance = false;
