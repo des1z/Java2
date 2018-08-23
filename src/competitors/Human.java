@@ -54,6 +54,6 @@ public class Human implements Competitor {
 
     @Override
     public void result() {
-        System.out.println(name + ": " + active);
+        System.out.println("Human " + name + ": " + active);
     }
 }
