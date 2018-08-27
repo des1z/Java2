@@ -29,7 +29,24 @@ public class main {
                 {"9", "7", "2", "6"}
         };
 
+        try {
+            System.out.println(Converter.strConverter(correctMatrix));
+        } catch (CustomException e) {
+            e.getMessage();
+        }
 
+
+        try {
+            System.out.println(Converter.strConverter(wrongSizeMatrix));
+        } catch (CustomException e) {
+            System.err.println(e.getMessage());
+        }
+
+        try {
+            System.out.println(Converter.strConverter(wrongChar));
+        } catch (CustomException e) {
+            System.err.println(e.getMessage());
+        }
 
 
     }
