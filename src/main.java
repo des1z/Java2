@@ -6,7 +6,7 @@
  */
 
 import exception.*;
-import Converter.*;
+import tools.*;
 
 public class main {
     public static void main(String[] args) {
@@ -30,20 +30,20 @@ public class main {
         };
 
         try {
-            System.out.println(Converter.strConverter(correctMatrix));
+            System.out.println(Coverter.strConverter(correctMatrix));
         } catch (CustomException e) {
             e.getMessage();
         }
 
 
         try {
-            System.out.println(Converter.strConverter(wrongSizeMatrix));
+            System.out.println(Coverter.strConverter(wrongSizeMatrix));
         } catch (CustomException e) {
             System.err.println(e.getMessage());
         }
 
         try {
-            System.out.println(Converter.strConverter(wrongChar));
+            System.out.println(Coverter.strConverter(wrongChar));
         } catch (CustomException e) {
             System.err.println(e.getMessage());
         }
