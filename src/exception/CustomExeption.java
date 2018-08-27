@@ -1,4 +1,8 @@
 package exception;
 
-public class CustomExeption {
+public class CustomException extends Exception {
+
+    public CustomException(String message) {
+        super(message);
+    }
 }
