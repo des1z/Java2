@@ -21,5 +21,13 @@ public class Java2HW3 {
         Set<String> uniq = new HashSet<>(Arrays.asList(words));
         System.out.println(uniq);
         System.out.println("");
+
+        Phonebook pb = new Phonebook();
+
+        pb.add("Ivanov", "505505");
+        pb.add("Sobolev", "707777");
+        pb.add("Sobolev", "101111");
+
+        System.out.println(pb.get("Sobolev"));
     }
 }
