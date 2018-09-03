@@ -4,7 +4,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class TextPanel extends JPanel {
+class TextPanel extends JPanel {
     private JTextArea textArea;
 
     TextPanel(){
