@@ -12,6 +12,6 @@ class Frame extends JFrame {
         TextPanel textPanel = new TextPanel();
         SendPanel sendPanel = new SendPanel(textPanel.getTextArea());
 
-        
+
     }
 }
