@@ -1,7 +1,16 @@
 import javax.swing.*;
 import java.awt.*;
+/**
+ * @version 03.09.2018
+ * @author Viktor Chernyaev
+ * @Java2 homework Lesson-4
+ * @link https://github.com/des1z
+ */
 
 class Frame extends JFrame {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Frame::new);
+    }
     Frame(){
         setTitle("Chat");
         setSize(new Dimension(400, 400));
