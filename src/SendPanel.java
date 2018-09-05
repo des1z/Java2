@@ -59,14 +59,7 @@ class SendPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
-            if (e.getSource() instanceof JButton) {
                 append();
-            }
-
-            if (e.getSource() instanceof JTextField) {
-                append();
-            }
         }
     }
 
