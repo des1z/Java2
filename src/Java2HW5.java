@@ -52,7 +52,8 @@ public class Java2HW5 {
         return arr;
     }
 
-    public static void main(String s[]) {
+
+    public static void main(String[] args) {
         Java2HW5 o = new Java2HW5();
         o.runOneThread();
         o.runTwoThreads();
