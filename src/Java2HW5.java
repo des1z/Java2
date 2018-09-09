@@ -6,11 +6,6 @@
  */
 
 public class Java2HW5 {
-    public static void main(String[] args) {
-        Java2HW5 o = new Java2HW5();
-        o.runOneThread();
-        o.runTwoThreads();
-    }
     private static final int size = 10000000;
     private static final int h = size / 2;
 
@@ -55,5 +50,10 @@ public class Java2HW5 {
         for (int i = 0; i < arr.length; i++)
             arr[i] = (float) (arr[i] * Math.sin(0.2f + arr[i] / 5) * Math.cos(0.2f + arr[i] / 5) * Math.cos(0.4f + arr[i] / 2));
         return arr;
+    }
+    public static void main(String[] args) {
+        Java2HW5 o = new Java2HW5();
+        o.runOneThread();
+        o.runTwoThreads();
     }
 }
