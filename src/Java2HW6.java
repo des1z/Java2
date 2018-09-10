@@ -6,4 +6,5 @@
  */
 
 public class Java2HW6 {
+    
 }
