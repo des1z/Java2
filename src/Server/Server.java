@@ -9,7 +9,7 @@ public class Server {
         Socket socket = null;
 
         try {
-            server = new ServerSocket(3333);
+            server = new ServerSocket(9000);
             System.out.println("Server created. Waiting for client...");
             while (true) {
                 socket = server.accept();

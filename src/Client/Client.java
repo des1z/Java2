@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Client {
     final String SERVER_ADDRESS = "localhost";
-    final int SERVER_PORT = 3333;
+    final int SERVER_PORT = 9000;
     Socket socket;
     Scanner in, console;
     PrintWriter out;
