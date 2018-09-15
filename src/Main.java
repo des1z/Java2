@@ -1,11 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  * @version 15.09.2018
@@ -16,15 +18,18 @@ import java.util.Scanner;
 
 public class Main extends JFrame {
 
-    private final String SERVER_ADDRESS = "localhost";
+    private final String SERVER_ADDR = "localhost";
     private final int SERVER_PORT = 8888;
 
+    private JTextField login = new JTextField("Enter Login");
+    private JTextField password = new JTextField("Enter Password");
+    private JButton authBtn = new JButton("Auth");
     private JTextField jtf;
     private JTextArea jta;
 
     private Socket sock;
-    private Scanner in;
-    private PrintWriter out;
+    private DataInputStream in;
+    private DataOutputStream out;
 
     public static void main(String[] args) {
         new Main().setVisible(true);
@@ -32,54 +37,15 @@ public class Main extends JFrame {
 
     public Main() {
         initUI();
-        initNetwork();
-    }
-
-    private void initNetwork() {
-        try {
-            sock = new Socket(SERVER_ADDRESS, SERVER_PORT);
-            in = new Scanner(sock.getInputStream());
-            out = new PrintWriter(sock.getOutputStream(), true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        if (in.hasNext()) {
-                            String w = in.nextLine();
-                            if (w.equalsIgnoreCase("end")) break;
-                            jta.append(w + System.lineSeparator());
-                        }
-                    }
-                } catch (Exception e) {
-                }
-            }
-        }).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                Scanner s = new Scanner(System.in);
-
-                while (true) {
-                    try {
-                        if (s.hasNext()) sendMsg(s.nextLine());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
     }
 
     private void initUI() {
         setBounds(600, 300, 500, 500);
         setTitle("Client");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        createAuthPanel();
+
         jta = new JTextArea();
         jta.setEditable(false);
         jta.setLineWrap(true);
@@ -91,6 +57,7 @@ public class Main extends JFrame {
         JButton jbSend = new JButton("SEND");
         bottomPanel.add(jbSend, BorderLayout.EAST);
         jtf = new JTextField();
+        jtf.setEnabled(false);
         bottomPanel.add(jtf, BorderLayout.CENTER);
 
         jbSend.addActionListener(e -> sendMsgFromUI());
@@ -101,7 +68,7 @@ public class Main extends JFrame {
             public void windowClosing(WindowEvent event) {
                 super.windowClosing(event);
                 try {
-                    out.println("end");
+                    out.writeUTF("end");
                     sock.close();
                     out.close();
                     in.close();
@@ -109,6 +76,51 @@ public class Main extends JFrame {
                 }
             }
         });
+    }
+
+    private void createAuthPanel() {
+        JPanel authPanel = new JPanel(new GridLayout());
+        authPanel.add(login);
+        authPanel.add(password);
+        authPanel.add(authBtn);
+        add(authPanel, BorderLayout.NORTH);
+        authBtn.addActionListener(e -> connect(login.getText(), password.getText()));
+    }
+
+    private void connect(String login, String password) {
+
+        if (login.trim().isEmpty() || password.trim().isEmpty()) {
+            System.out.println("login or password is empty!");
+            return;
+        }
+
+        jtf.setEnabled(true);
+        try {
+            sock = new Socket(SERVER_ADDR, SERVER_PORT);
+            in = new DataInputStream(sock.getInputStream());
+            out = new DataOutputStream(sock.getOutputStream());
+            out.writeUTF("/auth " + login + " " + password);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        String msg = in.readUTF();
+                        if (msg != null) {
+                            if (msg.equalsIgnoreCase("end session")) break;
+                            jta.append(msg + System.lineSeparator());
+                        }
+                    }
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                }
+            }
+        }).start();
     }
 
     private void sendMsgFromUI() {
@@ -120,8 +132,12 @@ public class Main extends JFrame {
 
     private void sendMsg(String msg) {
         if (!msg.trim().isEmpty()) {
-            out.println(msg);
-            jta.append("Me: " + msg + System.lineSeparator());
+            try {
+                out.writeUTF(msg);
+                out.flush();
+            } catch (IOException e) {
+                System.out.println("Fail to send message: " + e.getLocalizedMessage());
+            }
         }
     }
 }

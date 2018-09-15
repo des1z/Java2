@@ -1,22 +1,22 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class ClientHandler implements Runnable {
+    private Server server;
     private Socket socket;
-    private PrintWriter out;
-    private Scanner in;
-    private volatile static int CLIENTS_COUNT = 0;
-    private String name;
+    private DataOutputStream out;
+    private DataInputStream in;
+    private String name = null;
+    private boolean isAuth = false;
 
-    public ClientHandler(Socket socket) {
+    public ClientHandler(Server server, Socket socket) {
+        this.server = server;
         try {
             this.socket = socket;
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new Scanner(socket.getInputStream());
-            CLIENTS_COUNT++;
-            name = "Client #" + CLIENTS_COUNT;
+            out = new DataOutputStream(socket.getOutputStream());
+            in = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             System.out.println("Client handler initialization failed: " + e.getLocalizedMessage());
         }
@@ -24,12 +24,43 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            if (in.hasNext()) {
-                String w = in.nextLine();
-                System.out.println(name + ": " + w);
-                if (w.equalsIgnoreCase("END")) break;
+        try {
+            while (true) {
+                String msg = in.readUTF();
+                if (msg.startsWith("/auth")) {
+                    String[] data = msg.split(" ");
+
+                    if (data.length == 3) {
+                        name = server.getAuthService().getNick(data[1], data[2]);
+                        if (name != null) {
+                            isAuth = true;
+                            sendBroadcastMessage(name + " online");
+                        } else {
+                            sendMessage("Incorrect login or password");
+                        }
+                    } else {
+                        server.close(socket);
+                    }
+                } else if (isAuth) {
+                    if (msg.startsWith("/w ")) {
+                        String[] data = msg.substring(3).split(" ", 2);
+
+                        String userName = data[0];
+                        if (isUserExist(userName)) {
+                            sendMessage("wisper " + userName + ": " + data[1]);
+                            sendPersonalMessage(userName, data[1]);
+                        } else {
+                            sendMessage("there is no such user" + userName);
+                        }
+                    } else {
+                        sendBroadcastMessage(name + " written: " + msg);
+                    }
+                } else {
+                    server.close(socket);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             System.out.println("Client disconnected");
@@ -39,7 +70,36 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private boolean isUserExist(String userName) {
+        return server.getAuthService().contains(userName);
+    }
+
+    public void sendPersonalMessage(String user, String message) {
+        server.sendPrivateMessage(name, user, message);
+    }
+
+    private void sendBroadcastMessage(String msg) {
+        server.sendBroadcastMessage(msg);
+    }
+
     public void sendMessage(String msg) {
-        out.println(msg);
+        System.out.println(name + ": " + msg);
+        try {
+            out.writeUTF(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isActive() {
+        return isAuth;
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public String getName() {
+        return name;
     }
 }
