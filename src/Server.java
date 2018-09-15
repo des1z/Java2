@@ -53,7 +53,6 @@ public class Server {
 
     public void close(Socket socket) {
         clients.removeIf(clientHandler -> clientHandler.getSocket().equals(socket));
-        //FIXME
     }
 
     void sendPrivateMessage(String from, String userName, String message) {
